@@ -1,26 +1,75 @@
 import { useState } from "react";
-import { phrases, categories } from "../data/phrases";
+import { phrases } from "../data/phrases";
 
-export default function PhraseList({ favorites, reviewData, onSelect }) {
-  const [selectedCategory, setSelectedCategory] = useState("すべて");
+const tagGroups = {
+  Email: [
+    { label: "すべて", filter: () => true },
+    { label: "Could you...?", filter: (p) => p.english.startsWith("Could you") },
+    { label: "Would you...?", filter: (p) => p.english.startsWith("Would") },
+    { label: "We would like to", filter: (p) => p.english.startsWith("We would like to") },
+    { label: "We would appreciate", filter: (p) => p.english.startsWith("We would appreciate") },
+    { label: "Please", filter: (p) => p.english.startsWith("Please") },
+    { label: "We will/have", filter: (p) => p.english.startsWith("We will") || p.english.startsWith("We have") },
+    { label: "Thank you", filter: (p) => p.english.startsWith("Thank you") },
+    { label: "Regarding/Based on", filter: (p) => p.tags.includes("reference") || p.tags.includes("reasoning") },
+    { label: "Opening/Closing", filter: (p) => p.tags.includes("opening") || p.tags.includes("closing") },
+  ],
+  Meeting: [
+    { label: "すべて", filter: () => true },
+    { label: "会議開始", filter: (p) => p.tags.includes("opening") },
+    { label: "技術トラブル", filter: (p) => p.tags.includes("technical") },
+    { label: "聞き返し・確認", filter: (p) => p.tags.includes("clarification") },
+    { label: "発言・割り込み", filter: (p) => p.tags.includes("turn-taking") },
+    { label: "プレゼン", filter: (p) => p.tags.includes("presentation") },
+    { label: "意見・同意", filter: (p) => p.tags.includes("opinion") || p.tags.includes("agreement") || p.tags.includes("disagreement") },
+    { label: "アクション", filter: (p) => p.tags.includes("action-item") || p.tags.includes("deadline") },
+    { label: "クロージング", filter: (p) => p.tags.includes("closing") },
+  ],
+};
+
+export default function PhraseList({ favorites, reviewData, onSelect, initialTab = "Email" }) {
+  const [mainTab, setMainTab] = useState(initialTab);
+  const [subFilter, setSubFilter] = useState("すべて");
   const [sortBy, setSortBy] = useState("id");
 
-  const filtered = phrases
-    .filter((p) => selectedCategory === "すべて" || p.category === selectedCategory)
+  const handleTabChange = (tab) => {
+    setMainTab(tab);
+    setSubFilter("すべて");
+  };
+
+  const filters = tagGroups[mainTab];
+  const currentFilter = filters.find((f) => f.label === subFilter) || filters[0];
+
+  const pool = phrases.filter((p) => p.category === mainTab);
+  const filtered = pool
+    .filter(currentFilter.filter)
     .sort((a, b) => {
       if (sortBy === "importance") return b.importance - a.importance;
-      if (sortBy === "learned") {
-        const aLearned = reviewData[a.id] ? 1 : 0;
-        const bLearned = reviewData[b.id] ? 1 : 0;
-        return bLearned - aLearned;
-      }
+      if (sortBy === "learned") return (reviewData[b.id] ? 1 : 0) - (reviewData[a.id] ? 1 : 0);
       return a.id - b.id;
     });
 
   return (
     <div className="screen">
-      <div className="section-header">
-        <h2>構文一覧</h2>
+      {/* Main tab */}
+      <div className="main-tab-bar">
+        {["Email", "Meeting"].map((tab) => (
+          <button
+            key={tab}
+            className={`main-tab-btn ${mainTab === tab ? "active" : ""}`}
+            onClick={() => handleTabChange(tab)}
+          >
+            {tab === "Email" ? "📧 メール" : "💻 オンライン会議"}
+            <span className="main-tab-count">
+              {phrases.filter((p) => p.category === tab).length}構文
+            </span>
+          </button>
+        ))}
+      </div>
+
+      {/* Header row */}
+      <div className="section-header" style={{ paddingTop: 12 }}>
+        <span className="list-count">{filtered.length}件</span>
         <select className="sort-select" value={sortBy} onChange={(e) => setSortBy(e.target.value)}>
           <option value="id">番号順</option>
           <option value="importance">重要度順</option>
@@ -28,24 +77,26 @@ export default function PhraseList({ favorites, reviewData, onSelect }) {
         </select>
       </div>
 
+      {/* Sub filter chips */}
       <div className="category-scroll">
-        {categories.map((cat) => (
+        {filters.map((f) => (
           <button
-            key={cat}
-            className={`category-chip ${selectedCategory === cat ? "active" : ""}`}
-            onClick={() => setSelectedCategory(cat)}
+            key={f.label}
+            className={`category-chip ${subFilter === f.label ? "active" : ""}`}
+            onClick={() => setSubFilter(f.label)}
           >
-            {cat}
+            {f.label}
           </button>
         ))}
       </div>
 
+      {/* Phrase rows */}
       <div className="phrase-list">
         {filtered.map((phrase) => {
           const rd = reviewData[phrase.id];
           const isFav = favorites.includes(phrase.id);
-          const isLearned = !!rd;
           const isMastered = rd && rd.repetitions >= 3;
+          const isLearned = !!rd;
 
           return (
             <button key={phrase.id} className="phrase-row" onClick={() => onSelect(phrase)}>

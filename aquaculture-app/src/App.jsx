@@ -12,7 +12,7 @@ import "./App.css";
 
 const NAV_ITEMS = [
   { id: "home", icon: "🏠", label: "ホーム" },
-  { id: "phrases", icon: "📚", label: "構文" },
+  { id: "phrases", icon: "📖", label: "構文" },
   { id: "test", icon: "✍️", label: "テスト" },
   { id: "review", icon: "🔄", label: "復習" },
   { id: "search", icon: "🔍", label: "検索" },
@@ -81,7 +81,8 @@ export default function App() {
       case "home":
         return <HomeScreen reviewData={reviewData} favorites={favorites} onNavigate={navigate} />;
       case "phrases":
-        return <PhraseList favorites={favorites} reviewData={reviewData} onSelect={(p) => openPhrase(p, "phrases")} />;
+      case "meeting":
+        return <PhraseList initialTab={screen === "meeting" ? "Meeting" : "Email"} favorites={favorites} reviewData={reviewData} onSelect={(p) => openPhrase(p, screen)} />;
       case "test":
         return <TestMode reviewData={reviewData} onUpdateReview={updateReview} />;
       case "review":

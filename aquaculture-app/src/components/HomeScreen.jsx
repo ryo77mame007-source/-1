@@ -2,29 +2,25 @@ import { phrases } from "../data/phrases";
 
 export default function HomeScreen({ reviewData, favorites, onNavigate }) {
   const today = new Date().toDateString();
+
   const dueForReview = phrases.filter((p) => {
     const rd = reviewData[p.id];
-    if (!rd) return false;
-    return new Date(rd.nextReview) <= new Date();
+    return rd && new Date(rd.nextReview) <= new Date();
   });
 
-  const learnedCount = Object.keys(reviewData).length;
-  const masteredCount = Object.values(reviewData).filter((r) => r.repetitions >= 3).length;
+  const emailPhrases = phrases.filter((p) => p.category === "Email");
+  const meetingPhrases = phrases.filter((p) => p.category === "Meeting");
 
-  const stats = [
-    { label: "学習済み", value: learnedCount, total: phrases.length, color: "#4CAF50" },
-    { label: "定着済み", value: masteredCount, total: phrases.length, color: "#2196F3" },
-    { label: "お気に入り", value: favorites.length, total: phrases.length, color: "#FF9800" },
-    { label: "復習待ち", value: dueForReview.length, total: null, color: "#f44336" },
-  ];
+  const learnedEmail = emailPhrases.filter((p) => reviewData[p.id]).length;
+  const learnedMeeting = meetingPhrases.filter((p) => reviewData[p.id]).length;
 
   const menuItems = [
-    { id: "phrases", icon: "📚", label: "構文一覧", sub: `全${phrases.length}構文`, color: "#4CAF50" },
-    { id: "test", icon: "✍️", label: "テスト", sub: "日→英 練習", color: "#2196F3" },
-    { id: "review", icon: "🔄", label: "復習", sub: dueForReview.length > 0 ? `${dueForReview.length}件待ち` : "すべて最新", color: "#FF9800" },
-    { id: "emails", icon: "📧", label: "メール例文", sub: "実務メール分解", color: "#9C27B0" },
-    { id: "search", icon: "🔍", label: "検索", sub: "構文・単語を探す", color: "#607D8B" },
-    { id: "favorites", icon: "⭐", label: "お気に入り", sub: `${favorites.length}件登録済み`, color: "#FF5722" },
+    { id: "phrases", icon: "📧", label: "メール構文", sub: `${emailPhrases.length}構文`, color: "#1565C0" },
+    { id: "meeting", icon: "💻", label: "会議構文", sub: `${meetingPhrases.length}構文`, color: "#00695C" },
+    { id: "test", icon: "✍️", label: "テスト", sub: "日→英 練習", color: "#6A1B9A" },
+    { id: "review", icon: "🔄", label: "復習", sub: dueForReview.length > 0 ? `${dueForReview.length}件待ち` : "最新状態", color: "#E65100" },
+    { id: "emails", icon: "📄", label: "メール例文", sub: "実務メール分解", color: "#2E7D32" },
+    { id: "search", icon: "🔍", label: "検索", sub: "構文・単語を探す", color: "#37474F" },
   ];
 
   return (
@@ -35,16 +31,38 @@ export default function HomeScreen({ reviewData, favorites, onNavigate }) {
         <p className="home-date">{today}</p>
       </div>
 
-      <div className="stats-grid">
-        {stats.map((s) => (
-          <div key={s.label} className="stat-card">
-            <div className="stat-value" style={{ color: s.color }}>
-              {s.value}
-              {s.total && <span className="stat-total">/{s.total}</span>}
-            </div>
-            <div className="stat-label">{s.label}</div>
+      {/* Progress bars */}
+      <div className="progress-section">
+        <div className="progress-row">
+          <span className="progress-label">📧 メール</span>
+          <div className="progress-bar-wrap">
+            <div
+              className="progress-bar-fill"
+              style={{ width: `${(learnedEmail / emailPhrases.length) * 100}%`, backgroundColor: "#1565C0" }}
+            />
           </div>
-        ))}
+          <span className="progress-text">{learnedEmail}/{emailPhrases.length}</span>
+        </div>
+        <div className="progress-row">
+          <span className="progress-label">💻 会議</span>
+          <div className="progress-bar-wrap">
+            <div
+              className="progress-bar-fill"
+              style={{ width: `${(learnedMeeting / meetingPhrases.length) * 100}%`, backgroundColor: "#00695C" }}
+            />
+          </div>
+          <span className="progress-text">{learnedMeeting}/{meetingPhrases.length}</span>
+        </div>
+        <div className="progress-row">
+          <span className="progress-label">⭐ お気に入り</span>
+          <div className="progress-bar-wrap">
+            <div
+              className="progress-bar-fill"
+              style={{ width: `${(favorites.length / phrases.length) * 100}%`, backgroundColor: "#FF8F00" }}
+            />
+          </div>
+          <span className="progress-text">{favorites.length}/{phrases.length}</span>
+        </div>
       </div>
 
       {dueForReview.length > 0 && (
