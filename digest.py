@@ -3,7 +3,7 @@
 import os
 import json
 import feedparser
-import anthropic
+import google.generativeai as genai
 import resend
 from datetime import datetime
 import pytz
@@ -50,7 +50,8 @@ def fetch_articles(max_per_feed: int = 8) -> list[dict]:
 
 
 def generate_digest(articles: list[dict]) -> dict:
-    client = anthropic.Anthropic(api_key=os.environ["ANTHROPIC_API_KEY"])
+    genai.configure(api_key=os.environ["GEMINI_API_KEY"])
+    model = genai.GenerativeModel("gemini-1.5-flash")
 
     articles_json = json.dumps(articles, ensure_ascii=False, indent=2)
 
@@ -84,14 +85,9 @@ def generate_digest(articles: list[dict]) -> dict:
   "closing_message": "今日の締めくくりメッセージ（読者の好奇心や行動を促す一言）"
 }}"""
 
-    message = client.messages.create(
-        model="claude-sonnet-4-6",
-        max_tokens=5000,
-        messages=[{"role": "user", "content": prompt}],
-    )
+    response = model.generate_content(prompt)
+    response_text = response.text.strip()
 
-    response_text = message.content[0].text.strip()
-    # Remove markdown code fences if present
     if response_text.startswith("```"):
         response_text = response_text.split("```")[1]
         if response_text.startswith("json"):
