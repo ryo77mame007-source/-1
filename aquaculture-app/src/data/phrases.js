@@ -1,6 +1,8 @@
 // category: "Email" | "Meeting"
 
-export const phrases = [
+import { phrasesExtra } from './phrasesExtra.js';
+
+const phrasesBase = [
 
   // ─────────────────────────────────────────
   // EMAIL (1–50)
@@ -2411,6 +2413,8 @@ export const phrases = [
   },
 ];
 
+export const phrases = [...phrasesBase, ...phrasesExtra];
+
 export const emailCategories = [
   "すべて",
   "Could you...?",
@@ -2422,6 +2426,9 @@ export const emailCategories = [
   "Thank you for",
   "Reference",
   "Opening / Closing",
+  "I am writing to",
+  "We / Our",
+  "Connectives",
 ];
 
 export const meetingCategories = [
@@ -2434,4 +2441,6 @@ export const meetingCategories = [
   "Opinion",
   "Action Items",
   "Closing",
+  "Introduction",
+  "Summary",
 ];
