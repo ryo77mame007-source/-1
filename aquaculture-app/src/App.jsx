@@ -9,12 +9,14 @@ import EmailExamples from "./components/EmailExamples";
 import SearchMode from "./components/SearchMode";
 import FavoritesMode from "./components/FavoritesMode";
 import WordList from "./components/WordList";
+import BasicsList from "./components/BasicsList";
 import "./App.css";
 
 const NAV_ITEMS = [
   { id: "home", icon: "🏠", label: "ホーム" },
   { id: "phrases", icon: "📖", label: "構文" },
   { id: "words", icon: "📚", label: "単語" },
+  { id: "basics", icon: "🌟", label: "超基礎" },
   { id: "test", icon: "✍️", label: "テスト" },
   { id: "review", icon: "🔄", label: "復習" },
   { id: "search", icon: "🔍", label: "検索" },
@@ -95,6 +97,8 @@ export default function App() {
         return <SearchMode onSelect={(p) => openPhrase(p, "search")} />;
       case "words":
         return <WordList />;
+      case "basics":
+        return <BasicsList />;
       case "favorites":
         return <FavoritesMode favorites={favorites} onSelect={(p) => openPhrase(p, "favorites")} />;
       default:
