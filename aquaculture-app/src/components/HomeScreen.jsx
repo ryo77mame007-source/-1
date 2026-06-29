@@ -1,8 +1,13 @@
 import { phrases } from "../data/phrases";
 import { words } from "../data/words";
+import { useStorage } from "../hooks/useStorage";
+
+const BASICS_TOTAL = 26;
 
 export default function HomeScreen({ reviewData, favorites, onNavigate }) {
   const today = new Date().toDateString();
+  const [favoriteWordIds] = useStorage("favoriteWords", []);
+  const [viewedBasics] = useStorage("viewedBasics", []);
 
   const dueForReview = phrases.filter((p) => {
     const rd = reviewData[p.id];
@@ -18,9 +23,10 @@ export default function HomeScreen({ reviewData, favorites, onNavigate }) {
   const menuItems = [
     { id: "phrases", icon: "📧", label: "メール構文", sub: `${emailPhrases.length}構文`, color: "#1565C0" },
     { id: "meeting", icon: "💻", label: "会議構文", sub: `${meetingPhrases.length}構文`, color: "#00695C" },
+    { id: "words", icon: "📚", label: "単語帳", sub: `${words.length}語`, color: "#AD1457" },
+    { id: "basics", icon: "🌟", label: "超基礎英語", sub: `${BASICS_TOTAL}トピック`, color: "#F57F17" },
     { id: "test", icon: "✍️", label: "テスト", sub: "日→英 練習", color: "#6A1B9A" },
     { id: "review", icon: "🔄", label: "復習", sub: dueForReview.length > 0 ? `${dueForReview.length}件待ち` : "最新状態", color: "#E65100" },
-    { id: "words", icon: "📚", label: "単語帳", sub: `${words.length}語`, color: "#AD1457" },
     { id: "emails", icon: "📄", label: "メール例文", sub: "実務メール分解", color: "#2E7D32" },
     { id: "search", icon: "🔍", label: "検索", sub: "構文・単語を探す", color: "#37474F" },
   ];
@@ -64,6 +70,26 @@ export default function HomeScreen({ reviewData, favorites, onNavigate }) {
             />
           </div>
           <span className="progress-text">{favorites.length}/{phrases.length}</span>
+        </div>
+        <div className="progress-row">
+          <span className="progress-label">📚 単語</span>
+          <div className="progress-bar-wrap">
+            <div
+              className="progress-bar-fill"
+              style={{ width: `${(favoriteWordIds.length / words.length) * 100}%`, backgroundColor: "#AD1457" }}
+            />
+          </div>
+          <span className="progress-text">{favoriteWordIds.length}/{words.length}</span>
+        </div>
+        <div className="progress-row">
+          <span className="progress-label">🌟 超基礎</span>
+          <div className="progress-bar-wrap">
+            <div
+              className="progress-bar-fill"
+              style={{ width: `${(viewedBasics.length / BASICS_TOTAL) * 100}%`, backgroundColor: "#F57F17" }}
+            />
+          </div>
+          <span className="progress-text">{viewedBasics.length}/{BASICS_TOTAL}</span>
         </div>
       </div>
 
