@@ -804,3 +804,170 @@ mark.highlight {
   border-radius: 2px;
   padding: 0 1px;
 }
+
+/* ===== Word List (単語帳) ===== */
+.word-list-screen {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.word-header {
+  flex-shrink: 0;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  padding: 12px 0 0;
+}
+
+.word-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text);
+  padding: 0 16px 8px;
+}
+
+.word-search-wrap {
+  padding: 0 16px 8px;
+}
+
+.word-search-input {
+  width: 100%;
+  padding: 9px 14px;
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  font-size: 15px;
+  background: var(--bg);
+  color: var(--text);
+  outline: none;
+}
+
+.word-search-input:focus {
+  border-color: var(--primary-light);
+}
+
+.word-chip-scroll {
+  display: flex;
+  gap: 6px;
+  padding: 0 16px 8px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.word-chip-scroll::-webkit-scrollbar { display: none; }
+
+.word-chip {
+  flex-shrink: 0;
+  padding: 5px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  background: var(--bg);
+  border: 1.5px solid var(--border);
+  transition: all 0.15s;
+}
+
+.word-chip.active {
+  background: var(--primary);
+  color: #fff;
+  border-color: var(--primary);
+}
+
+.word-meta {
+  font-size: 12px;
+  color: var(--text-muted);
+  padding: 4px 16px 8px;
+}
+
+.word-category-label {
+  color: var(--primary);
+  font-weight: 600;
+}
+
+.word-grid-scroll {
+  flex: 1;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+  padding: 12px 12px 16px;
+}
+
+.word-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.word-card {
+  background: var(--surface);
+  border-radius: 12px;
+  padding: 10px 10px 10px;
+  box-shadow: var(--shadow);
+  cursor: pointer;
+  border: 1px solid var(--border);
+  transition: box-shadow 0.15s;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.word-card:active {
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.word-card-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 6px;
+}
+
+.word-pos-badge {
+  font-size: 9px;
+  font-weight: 700;
+  color: #fff;
+  padding: 2px 6px;
+  border-radius: 4px;
+  letter-spacing: 0.02em;
+}
+
+.word-fav-btn {
+  font-size: 15px;
+  color: #FFB300;
+  padding: 0;
+  line-height: 1;
+}
+
+.word-english {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 3px;
+  word-break: break-word;
+  line-height: 1.3;
+}
+
+.word-japanese {
+  font-size: 11px;
+  color: var(--text-secondary);
+  line-height: 1.4;
+}
+
+.word-collocation {
+  margin-top: 7px;
+  padding-top: 7px;
+  border-top: 1px solid var(--border);
+  font-size: 10px;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+.collocation-label {
+  font-weight: 700;
+  color: var(--primary);
+}
+
+.word-empty {
+  text-align: center;
+  padding: 48px 24px;
+  color: var(--text-muted);
+  font-size: 14px;
+}
