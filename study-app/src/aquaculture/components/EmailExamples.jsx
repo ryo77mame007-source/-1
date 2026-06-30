@@ -58,6 +58,7 @@ export default function EmailExamples() {
                   {part.label}
                 </div>
                 <div className="part-text">{part.text}</div>
+                {part.ja && <div className="part-text-ja">{part.ja}</div>}
               </button>
               {selectedPart === i && part.note && (
                 <div className="part-note">

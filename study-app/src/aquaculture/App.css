@@ -498,6 +498,25 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
 .tags-row { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px; }
 .tag { font-size: 11px; background: #E3F2FD; color: var(--primary); padding: 3px 8px; border-radius: 10px; }
 
+/* ===== Application (other-scenario) card ===== */
+.application-card {
+  margin: 16px 16px 0;
+  background: var(--surface);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius);
+  padding: 14px 16px;
+}
+.application-title { font-size: 13px; font-weight: 700; margin-bottom: 8px; }
+.application-text { font-size: 13px; color: var(--text-secondary); line-height: 1.6; margin-bottom: 10px; }
+.application-example {
+  position: relative;
+  background: var(--bg);
+  border-left: 3px solid var(--primary-light);
+  border-radius: var(--radius-sm);
+  padding: 10px 44px 10px 12px;
+}
+.application-example-text { font-size: 14px; color: var(--text); line-height: 1.5; }
+
 /* ===== Learned Btn ===== */
 .learned-btn {
   display: block;
@@ -737,6 +756,7 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
   width: fit-content;
 }
 .part-text { font-size: 14px; color: var(--text); line-height: 1.5; font-weight: 500; }
+.part-text-ja { font-size: 13px; color: var(--text-secondary); line-height: 1.5; }
 
 .part-note {
   display: flex;

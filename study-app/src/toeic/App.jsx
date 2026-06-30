@@ -683,7 +683,7 @@ function PracticeScreen({
   const currentEval = evals[q.id];
 
   return (
-    <div className="min-h-screen bg-slate-50 pb-28">
+    <div className="min-h-screen bg-slate-50 pb-44">
       {/* ヘッダー */}
       <div className="sticky top-0 z-10 bg-white border-b border-slate-100 px-4 py-3 flex items-center justify-between">
         <button onClick={onBack} className="text-slate-500 text-sm px-2 py-1">← ホーム</button>
@@ -741,7 +741,10 @@ function PracticeScreen({
       </div>
 
       {/* 下部ナビゲーション */}
-      <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-slate-100 px-4 py-3 flex gap-3">
+      <div
+        className="fixed left-0 right-0 z-[200] bg-white border-t border-slate-100 px-4 py-3 flex gap-3 mx-auto"
+        style={{ bottom: "calc(68px + env(safe-area-inset-bottom, 0px))", maxWidth: "430px" }}
+      >
         <button
           onClick={onPrev}
           disabled={index === 0}

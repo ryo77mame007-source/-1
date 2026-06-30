@@ -6,7 +6,6 @@ import PhraseDetail from "./components/PhraseDetail";
 import TestMode from "./components/TestMode";
 import ReviewMode from "./components/ReviewMode";
 import EmailExamples from "./components/EmailExamples";
-import SearchMode from "./components/SearchMode";
 import FavoritesMode from "./components/FavoritesMode";
 import WordList from "./components/WordList";
 import BasicsList from "./components/BasicsList";
@@ -20,7 +19,6 @@ const NAV_ITEMS = [
   { id: "basics", icon: "🌟", label: "超基礎" },
   { id: "test", icon: "✍️", label: "テスト" },
   { id: "review", icon: "🔄", label: "復習" },
-  { id: "search", icon: "🔍", label: "検索" },
   { id: "toeic", icon: "🗣️", label: "TOEIC" },
 ];
 
@@ -95,8 +93,6 @@ export default function App() {
         return <ReviewMode reviewData={reviewData} onUpdateReview={updateReview} />;
       case "emails":
         return <EmailExamples />;
-      case "search":
-        return <SearchMode onSelect={(p) => openPhrase(p, "search")} />;
       case "words":
         return <WordList />;
       case "basics":

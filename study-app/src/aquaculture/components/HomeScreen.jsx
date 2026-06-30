@@ -28,7 +28,6 @@ export default function HomeScreen({ reviewData, favorites, onNavigate }) {
     { id: "test", icon: "✍️", label: "テスト", sub: "日→英 練習", color: "#6A1B9A" },
     { id: "review", icon: "🔄", label: "復習", sub: dueForReview.length > 0 ? `${dueForReview.length}件待ち` : "最新状態", color: "#E65100" },
     { id: "emails", icon: "📄", label: "メール例文", sub: "実務メール分解", color: "#2E7D32" },
-    { id: "search", icon: "🔍", label: "検索", sub: "構文・単語を探す", color: "#37474F" },
     { id: "toeic", icon: "🗣️", label: "TOEIC SW", sub: "スピーキング練習", color: "#0277BD" },
   ];
 
