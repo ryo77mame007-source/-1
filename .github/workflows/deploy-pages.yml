@@ -4,7 +4,7 @@ on:
   push:
     branches: [main]
     paths:
-      - "toeic-sw-app/**"
+      - "study-app/**"
       - ".github/workflows/deploy-pages.yml"
   workflow_dispatch:
 
@@ -24,12 +24,12 @@ jobs:
         with:
           node-version: 20
           cache: npm
-          cache-dependency-path: toeic-sw-app/package-lock.json
+          cache-dependency-path: study-app/package-lock.json
       - run: npm ci
-        working-directory: toeic-sw-app
+        working-directory: study-app
       - run: npm run build
-        working-directory: toeic-sw-app
+        working-directory: study-app
       - uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: toeic-sw-app/dist
+          publish_dir: study-app/dist
