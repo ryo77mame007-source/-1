@@ -697,6 +697,9 @@
       <span class="station-search-icon">🔍</span>
       <input type="text" class="station-input" id="station-input" placeholder="駅名を入力..." oninput="filterStations(this.value)">
     </div>
+    <div id="station-confirm-wrap" style="display:none;padding:12px 24px 0;">
+      <button class="primary-btn" id="station-confirm-btn" onclick="confirmTypedStation()">この駅で進む →</button>
+    </div>
     <div class="station-grid" id="station-grid"></div>
   </div>
 
@@ -933,15 +936,28 @@ function renderStations(list) {
 }
 
 function filterStations(val) {
-  filteredStations = val
-    ? STATIONS.filter(s => s.name.includes(val) || s.line.includes(val))
-    : STATIONS;
+  const confirmWrap = document.getElementById('station-confirm-wrap');
+  const confirmBtn = document.getElementById('station-confirm-btn');
+  if (val && val.trim()) {
+    filteredStations = STATIONS.filter(s => s.name.includes(val) || s.line.includes(val));
+    confirmWrap.style.display = 'block';
+    confirmBtn.textContent = '「' + val.trim() + '」駅で進む →';
+  } else {
+    filteredStations = STATIONS;
+    confirmWrap.style.display = 'none';
+  }
   renderStations(filteredStations);
+}
+
+function confirmTypedStation() {
+  const val = document.getElementById('station-input').value.trim();
+  if (val) selectStation(val);
 }
 
 function selectStation(name) {
   state.station = name;
   document.getElementById('station-input').value = '';
+  document.getElementById('station-confirm-wrap').style.display = 'none';
   renderStations(STATIONS);
   showScreen('screen-3');
 }
