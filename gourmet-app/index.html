@@ -988,23 +988,26 @@ function select(step, value, emoji, key, numVal) {
 
 // ── AI matching ──
 function score(r) {
+  // Food must match — hard filter. Use very negative so no food-mismatch can ever win.
+  if (r.food !== state.food) return -9999;
+
   let s = 0;
-  if (r.food === state.food) s += 40;
-  else return -1;
 
-  // station proximity (same = 20, any = 5)
-  if (r.station === state.station) s += 20;
-  else s += 5;
+  // Budget fit (score based on how well the budget aligns)
+  if (state.budgetVal > 0) {
+    if (r.budgetMax <= state.budgetVal) s += 20;
+    else if (r.budgetMax <= state.budgetVal * 1.4) s += 10;
+    else s -= 5;
+  }
 
-  // budget
-  if (r.budgetMax <= state.budgetVal) s += 15;
-  else if (r.budgetMax <= state.budgetVal * 1.3) s += 8;
+  // Who
+  if (state.who && r.who.includes(state.who)) s += 20;
 
-  // who
-  if (r.who.includes(state.who)) s += 15;
+  // Vibe
+  if (state.vibe && r.vibe.includes(state.vibe)) s += 15;
 
-  // vibe
-  if (r.vibe.includes(state.vibe)) s += 10;
+  // Add small random tiebreaker so same-score results vary
+  s += Math.random() * 3;
 
   return s;
 }
@@ -1012,23 +1015,41 @@ function score(r) {
 function findRestaurant() {
   showScreen('screen-loading');
   setTimeout(() => {
-    let best = null, bestScore = -99;
+    let best = null, bestScore = -9998;
     for (const r of RESTAURANTS) {
       const sc = score(r);
       if (sc > bestScore) { bestScore = sc; best = r; }
     }
-    if (!best) best = RESTAURANTS[0];
+    // Fallback: if no food match at all, pick first of the selected food type
+    if (!best || bestScore <= -9998) {
+      best = RESTAURANTS.find(r => r.food === state.food) || RESTAURANTS[0];
+    }
     showResult(best);
   }, 2200);
 }
 
-function showResult(r) {
-  // Fill fields
+async function fetchStationCoords(stationName) {
+  try {
+    const query = encodeURIComponent(stationName + '駅');
+    const res = await fetch(
+      `https://nominatim.openstreetmap.org/search?q=${query}&format=json&limit=1&accept-language=ja`,
+      { headers: { 'Accept': 'application/json' } }
+    );
+    const data = await res.json();
+    if (data && data.length > 0) {
+      return { lat: parseFloat(data[0].lat), lng: parseFloat(data[0].lon) };
+    }
+  } catch (e) { /* silent */ }
+  return null;
+}
+
+async function showResult(r) {
+  // Header
   document.getElementById('r-name').textContent = r.name;
   document.getElementById('r-name2').textContent = r.name;
-  document.getElementById('r-category').textContent = r.category + ' · ' + r.station + 'エリア';
+  // Use the user's searched station for display, not the internal DB station
+  document.getElementById('r-category').textContent = r.category + ' · ' + state.station + '駅エリア';
   document.getElementById('r-cat-badge').textContent = r.category;
-  document.getElementById('r-address').innerHTML = '📍 <span>' + r.address + '</span>';
   document.getElementById('r-emoji-img').textContent = r.emoji;
   document.getElementById('r-reason').textContent = r.reason;
   document.getElementById('r-budget').textContent = r.budgetLabel;
@@ -1036,8 +1057,13 @@ function showResult(r) {
   document.getElementById('r-scene').textContent = state.who;
   document.getElementById('r-vibe').textContent = state.vibe;
 
+  // Address: show user's station area
+  document.getElementById('r-address').innerHTML =
+    '📍 <span>' + state.station + '駅周辺</span>';
+
   // Tags
-  document.getElementById('r-tags').innerHTML = r.tags.map(t => `<span class="restaurant-tag">${t}</span>`).join('');
+  document.getElementById('r-tags').innerHTML =
+    r.tags.map(t => `<span class="restaurant-tag">${t}</span>`).join('');
 
   // Selections bar
   const chips = [state.food, state.station + '駅', state.budget, state.who, state.vibe];
@@ -1045,9 +1071,26 @@ function showResult(r) {
     `<div class="selection-chip"><div class="selection-chip-dot"></div>${c}</div>`
   ).join('');
 
-  // Map (OpenStreetMap iframe)
-  const mapUrl = `https://www.openstreetmap.org/export/embed.html?bbox=${r.lng-0.005},${r.lat-0.003},${r.lng+0.005},${r.lat+0.003}&layer=mapnik&marker=${r.lat},${r.lng}`;
-  document.getElementById('map-wrap').innerHTML = `<iframe src="${mapUrl}" loading="lazy" title="地図"></iframe>`;
+  // Map: show user's searched station area via Nominatim → OSM embed
+  const mapWrap = document.getElementById('map-wrap');
+  mapWrap.innerHTML = '<div style="height:100%;display:flex;align-items:center;justify-content:center;color:var(--text-muted);font-size:13px;">地図を読み込み中...</div>';
+
+  const coords = await fetchStationCoords(state.station);
+  if (coords) {
+    const { lat, lng } = coords;
+    const mapUrl = `https://www.openstreetmap.org/export/embed.html?bbox=${lng-0.008},${lat-0.005},${lng+0.008},${lat+0.005}&layer=mapnik&marker=${lat},${lng}`;
+    mapWrap.innerHTML = `<iframe src="${mapUrl}" loading="lazy" title="地図"></iframe>`;
+  } else {
+    const q = encodeURIComponent(state.station + '駅');
+    mapWrap.innerHTML = `
+      <div style="height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;">
+        <div style="font-size:13px;color:var(--text-secondary);">${state.station}駅の地図</div>
+        <a href="https://www.openstreetmap.org/search?query=${q}" target="_blank"
+           style="background:var(--accent-teal);color:var(--navy-deep);padding:10px 20px;border-radius:10px;font-weight:700;font-size:13px;text-decoration:none;">
+          地図を開く →
+        </a>
+      </div>`;
+  }
 
   showScreen('screen-result');
 }
